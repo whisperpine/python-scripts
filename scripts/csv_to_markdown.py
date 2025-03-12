@@ -12,6 +12,11 @@ but with a `.md` extension instead of `.csv`.
 
 Usage:
     python csv_to_markdown CSV_FILE
+
+This script originates from the following repo:
+https://github.com/whisperpine/python-scripts
+
+MIT License.
 """
 
 CSV_FILE = "CSV_FILE"
