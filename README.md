@@ -7,4 +7,4 @@ My python scripts.
 - [csv_to_markdown.py](./scripts/csv_to_markdown.py) -
 Convert a csv file to a markdown table.
 - [keep_a_changelog.py](./scripts/keep_a_changelog.py) -
-Generate CHANGELOG.md according to current repo's git history.
+Generate CHANGELOG.md according to git commit history.
