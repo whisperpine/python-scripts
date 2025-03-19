@@ -23,11 +23,6 @@
         {
           default = pkgs.mkShell {
             venvDir = ".venv";
-            shellHook = ''
-              echo ":: shellHook starts"
-              uv sync
-              echo ":: shellHook ends"
-            '';
             packages =
               with pkgs;
               [ python312 ]
