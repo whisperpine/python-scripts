@@ -41,7 +41,7 @@ def is_semver_tag(tag: str) -> bool:
     """
     Check if a string adheres to Semantic Versioning.
 
-    Note: the prefix "v" is optinal.
+    Note: the prefix "v" is optional.
     """
     SEMVER_PATTERN = re.compile(
         r"^v?(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$"
@@ -112,7 +112,7 @@ def print_commits(commits: list[CommitInfo]):
     """
     Print a list of CommitInfo.
 
-    This function is for debuggin purporse.
+    This function is for debugging purporse.
     """
     if not commits:
         print("No commits found or error occurred.")
