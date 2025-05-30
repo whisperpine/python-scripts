@@ -22,14 +22,13 @@
         { pkgs }:
         {
           default = pkgs.mkShell {
-            venvDir = ".venv";
-            packages =
-              with pkgs;
-              [ python312 ]
-              ++ (with pkgs.python312Packages; [
-                venvShellHook
-                uv
-              ]);
+            packages = with pkgs; [
+              python312
+              uv
+            ];
+            shellHook = ''
+              uv sync
+            '';
           };
         }
       );
