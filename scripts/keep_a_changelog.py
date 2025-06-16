@@ -23,14 +23,23 @@ MIT License.
 
 import os
 import re
-import sys
 import subprocess
 from dataclasses import dataclass
-from datetime import datetime
 
 
 @dataclass
 class CommitInfo:
+    """
+    A dataclass representing metadata for a git commit.
+
+    Attributes:
+        commit_hash (str): The full SHA-1 hash of the commit.
+        message (str): The commit message, typically following Conventional Commits.
+        date_str (str): The commit date in ISO format (YYYY-MM-DD).
+        tags (list[str]): A list of tags associated with the commit,
+            filtered to include only Semantic Versioning tags.
+    """
+
     commit_hash: str
     message: str
     date_str: str
@@ -43,13 +52,23 @@ def is_semver_tag(tag: str) -> bool:
 
     Note: the prefix "v" is optional.
     """
+
     SEMVER_PATTERN = re.compile(
         r"^v?(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$"
     )
     return bool(SEMVER_PATTERN.match(tag))
 
 
-def get_git_commits() -> list[CommitInfo]:
+def get_git_logs() -> list[str]:
+    """
+    Retrieve a list of git commits.
+
+    Returns:
+        list[str]: A list of str, each representing a git log line.
+
+    Raises:
+        subprocess.CalledProcessError: If the git command fails to execute.
+    """
     try:
         # git log format: hash | message | date | tags
         LOG_FORMAT = "--pretty=format:%H|%s|%ad|%d"
@@ -61,10 +80,29 @@ def get_git_commits() -> list[CommitInfo]:
         )
     except subprocess.CalledProcessError as err:
         print(f"Error executing git command: {err}")
-        sys.exit(1)
+        raise err
+
+    return result.stdout.strip().split("\n")
+
+
+def parse_git_logs(lines: list[str]) -> list[CommitInfo]:
+    """
+    Parse raw git logs into structured data.
+
+    Args:
+        lines (list[str]): A list of str, each representing a git log line.
+
+    Returns:
+        list[CommitInfo]: A list of CommitInfo objects,
+            each representing a commit with its metadata.
+
+    Raises:
+        ValueError: If the commit date string cannot be parsed into a datetime object.
+    """
+    from datetime import datetime
 
     commits: list[CommitInfo] = []
-    for line in result.stdout.strip().split("\n"):
+    for line in lines:
         if not line:
             continue
 
@@ -108,7 +146,7 @@ def get_git_commits() -> list[CommitInfo]:
     return commits
 
 
-def print_commits(commits: list[CommitInfo]):
+def print_commits(commits: list[CommitInfo]) -> None:
     """
     Print a list of CommitInfo.
 
@@ -129,14 +167,8 @@ def print_commits(commits: list[CommitInfo]):
 def write_changelog(commits: list[CommitInfo]) -> None:
     """
     Write the changelog to a file.
-
-    Writes the changelog to CHANGELOG.md in the following format:
-
-    ## Version (YYYY-MM-DD)
-
-    - Commit
-    - Commit
     """
+
     if not commits:
         _ = print("No commits found or error occurred.")
         return
@@ -165,7 +197,12 @@ def get_git_root() -> str:
     return os.path.abspath(git_root)
 
 
-if __name__ == "__main__":
-    commits = get_git_commits()
-    # print_commits(commits)
+def main() -> None:
+    lines: list[str] = get_git_logs()
+    commits: list[CommitInfo] = parse_git_logs(lines)
+    # print_commits(commits)  # for debugging
     write_changelog(commits)
+
+
+if __name__ == "__main__":
+    main()
