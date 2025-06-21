@@ -22,11 +22,12 @@
         {
           default = pkgs.mkShell {
             packages = with pkgs; [
-              python312
+              python313
               uv
             ];
             shellHook = ''
               uv sync
+              source .venv/bin/activate
             '';
           };
         }
