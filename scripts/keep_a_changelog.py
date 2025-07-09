@@ -53,7 +53,7 @@ def is_semver_tag(tag: str) -> bool:
     Note: the prefix "v" is optional.
     """
 
-    SEMVER_PATTERN = re.compile(
+    SEMVER_PATTERN: re.Pattern[str] = re.compile(
         r"^v?(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$"
     )
     return bool(SEMVER_PATTERN.match(tag))
@@ -107,7 +107,7 @@ def parse_git_logs(lines: list[str]) -> list[CommitInfo]:
             continue
 
         # get separated parts of one line of git log
-        parts = line.split("|")
+        parts: list[str] = line.split("|")
 
         commit_hash: str = parts[0]
         message: str = parts[1]
@@ -123,7 +123,7 @@ def parse_git_logs(lines: list[str]) -> list[CommitInfo]:
 
         # process tags
         if len(parts) > 3 and parts[3]:
-            tag_str = parts[3].strip()
+            tag_str: str = parts[3].strip()
             if tag_str:
                 # remove parentheses and the prefix "tag: "
                 tag_str = re.sub(r"^\s*\(|\)\s*$", "", tag_str)

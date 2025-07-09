@@ -26,13 +26,13 @@ def main() -> None:
     import os
     import sys
 
-    csv_file = parse_arg()[CSV_FILE]
-    markdown_file = os.path.splitext(csv_file)[0] + ".md"
+    csv_file: str = parse_arg()[CSV_FILE]
+    markdown_file: str = os.path.splitext(csv_file)[0] + ".md"
     if os.path.exists(csv_file) == False:
         print(f"Error: No such file or directory: '{csv_file}'")
         sys.exit(1)
     if os.path.exists(markdown_file):
-        user_input = (
+        user_input: str = (
             input(f"'{markdown_file}' exists. Do you want to overwrite it? (y/n): ")
             .lower()
             .strip()
@@ -61,7 +61,7 @@ def parse_arg() -> dict[str, str]:
         description="Convert a CSV file to a markdown table."
     )
     _ = parser.add_argument(CSV_FILE, help="the target CSV's file path")
-    args = parser.parse_args()
+    args: argparse.Namespace = parser.parse_args()
     return dict(args._get_kwargs())
 
 
@@ -82,7 +82,7 @@ def csv_to_markdown_table(csv_file: str) -> str:
         reader = csv.reader(file)
         table: list[str] = []
         for i, row in enumerate(reader):
-            row = [item.strip() for item in row]
+            row: list[str] = [item.strip() for item in row]
             table.append("| " + " | ".join(row) + " |")
             if i == 0:
                 separators = repeat("-", len(row))

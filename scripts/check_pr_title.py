@@ -38,7 +38,7 @@ def is_ascii(text: str) -> bool:
     return True
 
 
-def main():
+def main() -> None:
     import os
     from sys import exit
 
