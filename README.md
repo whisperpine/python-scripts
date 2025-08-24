@@ -1,6 +1,6 @@
-# README
+# Python Scripts
 
-My python scripts.
+My python scripts mainly used for automation.
 
 ## List of Scripts
 
