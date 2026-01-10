@@ -8,3 +8,87 @@ dependencies = []
 
 [tool.basedpyright]
 reportExplicitAny = false
+
+[build-system]
+requires = ["uv_build>=0.9.17,<0.10.0"]
+build-backend = "uv_build"
+
+[tool.ruff.format]
+# Enable auto-formatting of code examples in docstrings. Markdown,
+# reStructuredText code/literal blocks and doctests are all supported.
+docstring-code-format = true
+
+# All ruff linting rules:
+# https://docs.astral.sh/ruff/rules/
+[tool.ruff.lint]
+select = [
+  "YTT",   # flake8-2020
+  "ANN",   # flake8-annotations
+  "ASYNC", # flake8-async
+  "S",     # flake8-bandit (security checks)
+  "FBT",   # flake8-boolean-trap
+  "B",     # flake8-bugbear (common design flaws)
+  "A",     # flake8-builtins
+  "COM",   # flake8-commas
+  "C4",    # flake8-comprehensions (better list/dict/set usage)
+  "DTZ",   # flake8-datetimez
+  "INT",   # flake8-gettext
+  "ISC",   # flake8-implicit-str-concat
+  "LOG",   # flake8-logging
+  "G",     # flake8-logging-format
+  "PIE",   # flake8-pie
+  "PYI",   # flake8-pyi
+  "PT",    # flake8-pytest-style (if using pytest)
+  "Q",     # flake8-quotes
+  "RET",   # flake8-return
+  "SLF",   # flake8-self
+  "SIM",   # flake8-simplify (suggests cleaner code patterns)
+  "SLOT",  # flake8-slots
+  "TID",   # flake8-tidy-imports
+  "TC",    # flake8-type-checking
+  "ARG",   # flake8-unused-arguments
+  "PTH",   # flake8-use-pathlib (modern file paths)
+  "FLY",   # flynt
+  "I",     # isort (import sorting)
+  "C90",   # mccabe
+  "N",     # pep8-naming
+  "PERF",  # Perflint
+  "E",     # pycodestyle errors
+  "W",     # pycodestyle warnings
+  "DOC",   # pydoclint
+  "D",     # pydocstyle
+  "F",     # pyflakes
+  "PGH",   # pygrep-hooks
+  "PL",    # Pylint
+  "UP",    # pyupgrade (modernize Python syntax)
+  "FURB",  # refurb
+  "RUF",   # Ruff-specific rules
+  "TRY",   # tryceratops
+]
+ignore = [
+  "COM812", # trailing comma missing 
+  "S104",   # possible binding to all interfaces
+  "S101",   # use of assert detected (useful for tests)
+  "S603",   # `subprocess` call: check for execution of untrusted input 
+  "E501",   # line-too-long (configure line-length instead)
+  "TRY400", # use `logging.exception` instead of `logging.error`
+  "PT013",  # incorrect import of `pytest`; use `import pytest` instead
+  "D203",   # one blank line before class (conflicts with d211)
+  "D212",   # multi-line docstring summary should start at the second line
+  "D100",   # missing docstring in public module (TAKE CARE IN PRODUCTION)
+  "D101",   # missing docstring in public class (TAKE CARE IN PRODUCTION)
+  "D102",   # missing docstring in public method (TAKE CARE IN PRODUCTION)
+  "D103",   # missing docstring in public function (TAKE CARE IN PRODUCTION)
+  "D104",   # missing docstring in public package (TAKE CARE IN PRODUCTION)
+  "D105",   # missing docstring in magic method
+  "D107",   # missing docstring in `__init__`
+]
+[tool.ruff.lint.per-file-ignores]
+"**/tests/*" = [
+  "PLR2004", # magic value used in comparison
+]
+
+# This configures the "D" linting rule selection of ruff.
+[tool.ruff.lint.pydocstyle]
+# https://docs.astral.sh/ruff/settings/#lint_pydocstyle_convention
+convention = "google"
