@@ -21,10 +21,11 @@ https://github.com/whisperpine/python-scripts
 MIT License.
 """
 
-import os
 import re
 import subprocess
 from dataclasses import dataclass
+from datetime import datetime
+from pathlib import Path
 
 
 @dataclass
@@ -52,11 +53,10 @@ def is_semver_tag(tag: str) -> bool:
 
     Note: the prefix "v" is optional.
     """
-
-    SEMVER_PATTERN: re.Pattern[str] = re.compile(
+    semver_pattern: re.Pattern[str] = re.compile(
         r"^v?(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$"
     )
-    return bool(SEMVER_PATTERN.match(tag))
+    return bool(semver_pattern.match(tag))
 
 
 def get_git_logs() -> list[str]:
@@ -70,17 +70,17 @@ def get_git_logs() -> list[str]:
         subprocess.CalledProcessError: If the git command fails to execute.
     """
     try:
-        # git log format: hash | message | date | tags
-        LOG_FORMAT = "--pretty=format:%H|%s|%ad|%d"
+        # Git log format: hash | message | date | tags.
+        log_format = "--pretty=format:%H|%s|%ad|%d"
         result = subprocess.run(
-            ["git", "log", LOG_FORMAT, "--date=iso"],
+            ["git", "log", log_format, "--date=iso"],  # noqa: S607
             capture_output=True,
             text=True,
             check=True,
         )
     except subprocess.CalledProcessError as err:
         print(f"Error executing git command: {err}")
-        raise err
+        raise
 
     return result.stdout.strip().split("\n")
 
@@ -99,8 +99,6 @@ def parse_git_logs(lines: list[str]) -> list[CommitInfo]:
     Raises:
         ValueError: If the commit date string cannot be parsed into a datetime object.
     """
-    from datetime import datetime
-
     commits: list[CommitInfo] = []
     for line in lines:
         if not line:
@@ -119,10 +117,10 @@ def parse_git_logs(lines: list[str]) -> list[CommitInfo]:
             commit_date = datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S %z")
         except ValueError as err:
             err.add_note(f"failed to parse '{date_str}' to datetime")
-            raise err
+            raise
 
         # process tags
-        if len(parts) > 3 and parts[3]:
+        if len(parts) > 3 and parts[3]:  # noqa: PLR2004
             tag_str: str = parts[3].strip()
             if tag_str:
                 # remove parentheses and the prefix "tag: "
@@ -165,36 +163,34 @@ def print_commits(commits: list[CommitInfo]) -> None:
 
 
 def write_changelog(commits: list[CommitInfo]) -> None:
-    """
-    Write the changelog to a file.
-    """
-
+    """Write the changelog to a file."""
     if not commits:
-        _ = print("No commits found or error occurred.")
+        print("No commits found or error occurred.")
         return
 
-    changelog_path = os.path.join(get_git_root(), "CHANGELOG.md")
-    with open(changelog_path, "w") as f:
-        _ = f.write("# CHANGELOG\n\n")
+    changelog_path: Path = get_git_root() / "CHANGELOG.md"
+    with Path(changelog_path).open("w") as f:
+        f.write("# CHANGELOG\n\n")
         if len(commits[0].tags) == 0:
-            _ = f.write("## Unreleased\n\n")
+            f.write("## Unreleased\n\n")
         for commit in commits:
             if len(commit.tags) > 0:
                 heading = "\n## " + ",".join(commit.tags) + f" - {commit.date_str}\n\n"
-                _ = f.write(heading)
-            _ = f.write(f"- {commit.message}\n")
+                f.write(heading)
+            f.write(f"- {commit.message}\n")
 
 
-def get_git_root() -> str:
+def get_git_root() -> Path:
     """Return the absolute path of the repo's root directory."""
-    git_root = (
+    git_root: str = (
         subprocess.check_output(
-            ["git", "rev-parse", "--show-toplevel"], stderr=subprocess.STDOUT
+            ["git", "rev-parse", "--show-toplevel"],  # noqa: S607
+            stderr=subprocess.STDOUT,
         )
         .decode("utf-8")
         .strip()
     )
-    return os.path.abspath(git_root)
+    return Path(git_root).resolve()
 
 
 def main() -> None:

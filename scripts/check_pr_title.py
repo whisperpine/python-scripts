@@ -18,6 +18,12 @@ https://github.com/whisperpine/check_pr_title
 MIT License.
 """
 
+import os
+import re
+import sys
+
+ENV_VAR_NAME = "PR_TITLE"
+
 
 def print_in_red(text: str) -> None:
     """Print text in red color."""
@@ -26,30 +32,23 @@ def print_in_red(text: str) -> None:
 
 def is_ascii(text: str) -> bool:
     """Check if input text contains only ASCII chars."""
-    import re
-
-    ascii_chars = re.compile(r"[^\x00-\x7F]")
-    non_ascii_chars = ascii_chars.findall(text)
+    ascii_chars: re.Pattern[str] = re.compile(r"[^\x00-\x7F]")
+    non_ascii_chars: list[str] = ascii_chars.findall(text)
 
     if non_ascii_chars:
-        non_ascii_chars = set(dict.fromkeys(non_ascii_chars))
+        non_ascii_chars: set[str] = set(dict.fromkeys(non_ascii_chars))
         print_in_red(f"error: non-ASCII chars found: {non_ascii_chars}")
         return False
     return True
 
 
 def main() -> None:
-    import os
-    from sys import exit
-
-    ENV_VAR_NAME = "PR_TITLE"
-    mr_title = os.environ.get(ENV_VAR_NAME)
+    mr_title: str | None = os.environ.get(ENV_VAR_NAME)
     if not mr_title:
         print_in_red(f"error: cannot get env var {ENV_VAR_NAME}")
-        exit(1)
-
-    if not is_ascii(mr_title):
-        exit(1)
+        sys.exit(1)
+    elif not is_ascii(mr_title):
+        sys.exit(1)
 
 
 if __name__ == "__main__":
