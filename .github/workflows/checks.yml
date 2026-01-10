@@ -1,0 +1,43 @@
+name: Checks
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  typos:
+    runs-on: ubuntu-latest
+    name: spell check with typos
+    steps:
+      - uses: actions/checkout@v6
+      - uses: cachix/install-nix-action@v31
+      - name: Run typos command
+        shell: nix shell nixpkgs#typos --quiet --command bash {0}
+        run: typos --hidden --exclude .git --format brief
+
+  ruff:
+    runs-on: ubuntu-latest
+    name: lint and format by ruff
+    steps:
+      - uses: actions/checkout@v6
+      - uses: cachix/install-nix-action@v31
+      - name: Run typos command
+        shell: nix shell nixpkgs#ruff --quiet --command bash {0}
+        run: |
+          ruff format --check
+          ruff check
+
+  ty:
+    runs-on: ubuntu-latest
+    name: use ty to check types
+    steps:
+      - uses: actions/checkout@v6
+      - uses: cachix/install-nix-action@v31
+      - name: Run typos command
+        shell: nix shell nixpkgs#uv nixpkgs#ty --quiet --command bash {0}
+        run: |
+          uv sync
+          ty check
