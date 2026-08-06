@@ -10,7 +10,7 @@ dependencies = []
 reportExplicitAny = false
 
 [build-system]
-requires = ["uv_build>=0.9.17,<0.10.0"]
+requires = ["uv_build>=0.12.1,<0.13.0"]
 build-backend = "uv_build"
 
 [tool.ruff.format]
@@ -66,10 +66,10 @@ select = [
   "TRY",   # tryceratops
 ]
 ignore = [
-  "COM812", # trailing comma missing 
+  "COM812", # trailing comma missing
   "S104",   # possible binding to all interfaces
   "S101",   # use of assert detected (useful for tests)
-  "S603",   # `subprocess` call: check for execution of untrusted input 
+  "S603",   # `subprocess` call: check for execution of untrusted input
   "E501",   # line-too-long (configure line-length instead)
   "TRY400", # use `logging.exception` instead of `logging.error`
   "PT013",  # incorrect import of `pytest`; use `import pytest` instead
