@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     name: spell check with typos
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: cachix/install-nix-action@v31
       - name: Run typos command
         shell: nix shell nixpkgs#typos --quiet --command bash {0}
@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     name: lint and format by ruff
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: cachix/install-nix-action@v31
       - name: Run typos command
         shell: nix shell nixpkgs#ruff --quiet --command bash {0}
@@ -34,7 +34,7 @@ jobs:
     runs-on: ubuntu-latest
     name: use ty to check types
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: actions/cache@v6
         with:
           path: ~/.cache/uv
