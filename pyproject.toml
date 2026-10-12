@@ -87,8 +87,6 @@ ignore = [
 "**/tests/*" = [
   "PLR2004", # magic value used in comparison
 ]
-
-# This configures the "D" linting rule selection of ruff.
-[tool.ruff.lint.pydocstyle]
 # https://docs.astral.sh/ruff/settings/#lint_pydocstyle_convention
-convention = "google"
+[tool.ruff.lint.pydocstyle]
+convention = "google" # use google-style docstrings
