@@ -35,6 +35,10 @@ jobs:
     name: use ty to check types
     steps:
       - uses: actions/checkout@v6
+      - uses: actions/cache@v6
+        with:
+          path: ~/.cache/uv
+          key: ${{ runner.os }}-uv-${{ hashFiles('**/uv.lock') }}
       - uses: cachix/install-nix-action@v31
       - name: Run typos command
         shell: nix shell nixpkgs#uv nixpkgs#ty --quiet --command bash {0}
