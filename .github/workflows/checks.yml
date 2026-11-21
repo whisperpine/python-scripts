@@ -7,15 +7,24 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   typos:
     runs-on: ubuntu-latest
     name: spell check with typos
     steps:
       - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       - uses: cachix/install-nix-action@v31
       - name: Run typos command
-        shell: nix shell nixpkgs#typos --quiet --command bash {0}
+        shell: nix shell --inputs-from . nixpkgs#typos --quiet --command bash {0}
         run: typos --hidden --exclude .git --format brief
 
   ruff:
@@ -23,9 +32,11 @@ jobs:
     name: lint and format by ruff
     steps:
       - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       - uses: cachix/install-nix-action@v31
       - name: Run typos command
-        shell: nix shell nixpkgs#ruff --quiet --command bash {0}
+        shell: nix shell --inputs-from . nixpkgs#ruff --quiet --command bash {0}
         run: |
           ruff format --check
           ruff check
@@ -35,13 +46,27 @@ jobs:
     name: use ty to check types
     steps:
       - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       - uses: actions/cache@v6
         with:
           path: ~/.cache/uv
           key: ${{ runner.os }}-uv-${{ hashFiles('**/uv.lock') }}
       - uses: cachix/install-nix-action@v31
       - name: Run typos command
-        shell: nix shell nixpkgs#uv nixpkgs#ty --quiet --command bash {0}
+        shell: nix shell --inputs-from . nixpkgs#uv nixpkgs#ty --quiet --command bash {0}
         run: |
           uv sync
           ty check
+
+  zizmor:
+    name: lint github actions by zizmor
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: cachix/install-nix-action@v31
+      - name: Run zizmor command
+        shell: nix shell --inputs-from . nixpkgs#zizmor --quiet --command bash {0}
+        run: zizmor --persona=pedantic .github
